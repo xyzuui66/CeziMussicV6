@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CeziMusic V5.5 - Sovereign</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,700&display=swap');
+        
+        :root { 
+            --gold: #D4AF37; 
+            --accent: #00f2ff;
+            --deep: #050505;
+            --glass: rgba(15, 15, 15, 0.75);
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--deep); 
+            color: white; 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100vh;
+        }
+
+        /* Neural Background Elite */
+        .neural-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 50% -10%, rgba(212,175,55,0.15), transparent 60%),
+                        radial-gradient(circle at 0% 100%, rgba(0,242,255,0.05), transparent 40%), #000;
+        }
+
+        /* View Transition */
+        .view-section { 
+            display: none; 
+            height: 100vh; 
+            overflow-y: auto; 
+            padding-bottom: 150px;
+        }
+        .active-view { 
+            display: block !important; 
+            animation: viewEnter 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        @keyframes viewEnter {
+            from { opacity: 0; transform: scale(0.97); filter: blur(5px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        .glass-luxury { 
+            background: var(--glass); 
+            backdrop-filter: blur(40px) saturate(160%); 
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+
+        /* Symmetric Bottom Nav */
+        .nav-container {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 92%; height: 85px; z-index: 10000;
+        }
+        .nav-bar {
+            width: 100%; height: 100%; border-radius: 35px;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 0 10px;
+        }
+        .nav-item { 
+            position: relative; color: #555; transition: 0.4s;
+            display: flex; flex-direction: column; align-items: center; flex: 1;
+        }
+        .nav-item.active { color: var(--gold); transform: translateY(-5px); }
+        .nav-item i { font-size: 20px; margin-bottom: 5px; }
+        .nav-item span { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .nav-active-glow {
+            position: absolute; top: -15px; width: 30px; height: 2px;
+            background: var(--gold); box-shadow: 0 0 15px var(--gold);
+            border-radius: 10px; display: none;
+        }
+        .nav-item.active .nav-active-glow { display: block; }
+
+        /* Chat System Royale */
+        .chat-bubble { padding: 14px 20px; border-radius: 25px; font-size: 13px; max-width: 85%; margin-bottom: 15px; animation: pop 0.3s ease; }
+        @keyframes pop { from { transform: translateY(10px) scale(0.9); opacity: 0; } }
+        .bubble-ai { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .bubble-me { background: linear-gradient(135deg, var(--gold), #B8860B); color: #000; font-weight: 700; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 10px 20px rgba(212,175,55,0.2); }
+
+        /* Scrollbar Hide */
+        ::-webkit-scrollbar { width: 0; }
+    </style>
+</head>
+<body>
+
+<div class="neural-bg"></div>
+
+<div id="app">
+    <header class="fixed top-0 w-full z-[9000] p-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-black italic gold-text" style="font-family: 'Playfair Display'; color: var(--gold); letter-spacing: -1px;">Aethelgard <span class="text-white opacity-20">OS</span></h1>
+            <div class="flex items-center gap-2 mt-1">
+                <div id="guard-node" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+                <span id="guard-text" class="text-[7px] font-bold tracking-[0.4em] text-cyan-400 uppercase">Neural Guard: Protected</span>
+            </div>
+        </div>
+        <button onclick="Core.modal('guard-modal')" class="w-12 h-12 rounded-2xl glass-luxury flex items-center justify-center border border-white/5 shadow-2xl">
+            <i class="fas fa-microchip text-cyan-400"></i>
+        </button>
+    </header>
+
+    <section id="view-home" class="view-section active-view p-8 pt-40">
+        <div class="mb-10 relative">
+            <input type="text" onkeypress="if(event.key==='Enter')Core.music.search(this.value)" placeholder="Search the masterpieces..." class="w-full glass-luxury py-5 px-8 rounded-full outline-none focus:border-gold/40 transition-all text-xs italic">
+            <i class="fas fa-search absolute right-8 top-1/2 -translate-y-1/2 opacity-20"></i>
+        </div>
+        <div id="music-grid" class="grid grid-cols-2 gap-6"></div>
+    </section>
+
+    <section id="view-social" class="view-section p-8 pt-40">
+        <div class="glass-luxury p-8 rounded-[3rem] mb-8">
+            <h2 class="text-[9px] font-black text-gold tracking-widest uppercase mb-6 text-center">Identity Network</h2>
+            <div class="flex gap-3">
+                <input type="text" id="friend-in" placeholder="Username..." class="flex-1 bg-white/5 p-4 rounded-2xl border border-white/5 outline-none text-xs">
+                <button onclick="Core.social.add()" class="bg-gold text-black w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+        <div id="friends-list" class="space-y-4"></div>
+    </section>
+
+    <section id="view-ai" class="view-section p-8 pt-40">
+        <div class="glass-luxury rounded-[3.5rem] h-[550px] flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20"><i class="fas fa-brain text-gold"></i></div>
+                <div>
+                    <h2 class="text-xs font-bold gold-text">Cezi IQ Intelligence</h2>
+                    <p class="text-[7px] text-cyan-400 font-bold tracking-widest uppercase">Encryption: Jaro618</p>
+                </div>
+            </div>
+            <div id="ai-chat-box" class="flex-1 overflow-y-auto p-6 flex flex-col">
+                <div class="chat-bubble bubble-ai">Selamat datang, Tuan. Saya Cezi-IQ. Seluruh sistem Aethelgard di bawah pengawasan saya. Ada perintah?</div>
+            </div>
+            <div class="p-6 bg-black/20 flex gap-3">
+                <input type="text" id="ai-in" placeholder="Kirim perintah sistem..." class="flex-1 bg-white/5 p-4 rounded-2xl border border-white/5 outline-none text-xs">
+                <button onclick="Core.social.askAI()" class="bg-gold text-black w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-bolt"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-profile" class="view-section p-8 pt-40">
+        <div class="glass-luxury rounded-[4rem] p-12 text-center shadow-2xl border-t-gold/30">
+            <div class="relative w-32 h-32 mx-auto mb-8">
+                <img id="u-pfp" src="" class="w-full h-full rounded-full object-cover border-2 border-gold/40 p-1.5 shadow-2xl">
+                <input type="file" id="pfp-f" hidden onchange="Core.user.updatePFP(this)">
+                <button onclick="document.getElementById('pfp-f').click()" class="absolute bottom-0 right-0 bg-gold text-black w-9 h-9 rounded-full border-4 border-[#080808] flex items-center justify-center shadow-xl"><i class="fas fa-camera text-[10px]"></i></button>
+            </div>
+            <h2 id="u-name" onclick="Core.user.editName()" class="text-3xl font-black tracking-tighter mb-2 gold-text">---</h2>
+            <p id="u-id" class="text-[9px] text-gray-500 font-mono tracking-[0.4em] uppercase mb-12">Authorized Legacy</p>
+            <button onclick="Core.system.logout()" class="text-[10px] text-red-500/50 font-black uppercase tracking-[0.3em] hover:text-red-500 transition-all">Destroy Data</button>
+        </div>
+    </section>
+
+    <div class="nav-container">
+        <nav class="nav-bar glass-luxury shadow-2xl">
+            <button onclick="Core.system.nav('home')" id="nav-home" class="nav-item active">
+                <div class="nav-active-glow"></div>
+                <i class="fas fa-compass"></i><span>Home</span>
+            </button>
+            <button onclick="Core.system.nav('social')" id="nav-social" class="nav-item">
+                <div class="nav-active-glow"></div>
+                <i class="fas fa-users-viewfinder"></i><span>Network</span>
+            </button>
+            <button onclick="Core.system.nav('ai')" id="nav-ai" class="nav-item">
+                <div class="nav-active-glow"></div>
+                <i class="fas fa-brain"></i><span>Cezi-IQ</span>
+            </button>
+            <button onclick="Core.system.nav('profile')" id="nav-profile" class="nav-item">
+                <div class="nav-active-glow"></div>
+                <i class="fas fa-shield-user"></i><span>Identity</span>
+            </button>
+        </nav>
+    </div>
+</div>
+
+<div id="guard-modal" class="fixed inset-0 z-[11000] glass-luxury hidden flex-col">
+    <div class="p-8 border-b border-white/5 flex justify-between items-center bg-black/40">
+        <h2 class="text-[10px] font-black text-cyan-400 tracking-[0.5em] uppercase italic">Aegis Neural Guard V5.5</h2>
+        <button onclick="Core.modal('guard-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="guard-logs" class="flex-1 p-8 overflow-y-auto font-mono text-[9px] text-cyan-500 space-y-2"></div>
+    <div class="p-8 bg-black/20">
+        <button onclick="Core.guard.deepHeal()" class="w-full py-5 bg-cyan-600/20 border border-cyan-500/50 text-cyan-400 rounded-3xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Initiate Sovereign Repair</button>
+    </div>
+</div>
+
+<audio id="core-audio" onerror="Core.guard.autoHeal()"></audio>
+
+<script>
+const Core = {
+    state: {
+        u: JSON.parse(localStorage.getItem('cz_v55_u')),
+        f: JSON.parse(localStorage.getItem('cz_v55_f') || '[]'),
+        key: 'Jaro618Csnfi88#'
+    },
+
+    // --- CEZI-GUARD (NEURAL REPAIRER) ---
+    guard: {
+        log: function(m, err = false) {
+            const box = document.getElementById('guard-logs');
+            if(box) {
+                const d = document.createElement('div');
+                d.className = err ? 'text-red-500 opacity-90' : 'opacity-70';
+                d.innerHTML = `> [${new Date().toLocaleTimeString()}] ${m.toUpperCase()}`;
+                box.prepend(d);
+            }
+            document.getElementById('guard-text').innerText = "GUARD: " + m.slice(0,18) + "...";
+        },
+        autoHeal: function() {
+            this.log("Audio node fracture detected", true);
+            Core.music.search('Classic Legacy');
+        },
+        deepHeal: function() {
+            this.log("SOVEREIGN REPAIR INITIATED", true);
+            document.body.style.opacity = "0.3";
+            setTimeout(() => {
+                localStorage.removeItem('cz_v55_cache');
+                Core.system.sync();
+                document.body.style.opacity = "1";
+                this.log("SYSTEM RE-STABILIZED");
+                alert("Guard: Sistem telah dikalibrasi ulang.");
+            }, 1200);
+        }
+    },
+
+    // --- SYSTEM CORE ---
+    system: {
+        init: function() {
+            if(!Core.state.u) {
+                Core.state.u = { name: 'Royale Member', pfp: 'https://ui-avatars.com/api/?background=D4AF37&color=000&name=R', id: 'LEGACY-'+Math.floor(Math.random()*9999) };
+                Core.system.save();
+            }
+            Core.system.sync();
+            Core.music.search('Dark Ambient');
+            Core.guard.log("Neural Sovereign Online");
+        },
+        nav: function(v) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
+            document.getElementById('view-'+v).classList.add('active-view');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('nav-'+v).classList.add('active');
+            Core.guard.log("Link to "+v+" established");
+        },
+        sync: function() {
+            document.getElementById('u-name').innerText = Core.state.u.name;
+            document.getElementById('u-pfp').src = Core.state.u.pfp;
+            document.getElementById('u-id').innerText = Core.state.u.id;
+            Core.social.render();
+        },
+        save: function() { localStorage.setItem('cz_v55_u', JSON.stringify(Core.state.u)); },
+        logout: function() { localStorage.clear(); location.reload(); }
+    },
+
+    // --- MUSIC MODULE ---
+    music: {
+        search: async function(q) {
+            const grid = document.getElementById('music-grid');
+            grid.innerHTML = `<div class="col-span-2 text-center py-20 animate-pulse text-gold text-[8px] tracking-[0.5em]">ACCESSING ARCHIVES...</div>`;
+            try {
+                const res = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=56d30c33&format=jsonpretty&limit=14&search=${q}`);
+                const data = await res.json();
+                grid.innerHTML = "";
+                data.results.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = "glass-luxury p-4 rounded-[2.5rem] active:scale-95 transition-all";
+                    card.innerHTML = `<img src="${t.album_image}" class="w-full aspect-square object-cover rounded-3xl mb-3 shadow-2xl"><p class="text-[10px] font-bold truncate">${t.name}</p>`;
+                    card.onclick = () => { document.getElementById('core-audio').src = t.audio; document.getElementById('core-audio').play(); Core.guard.log("Streaming: "+t.name); };
+                    grid.appendChild(card);
+                });
+            } catch(e) { Core.guard.autoHeal(); }
+        }
+    },
+
+    // --- SOCIAL & AI ---
+    social: {
+        add: function() {
+            const inp = document.getElementById('friend-in');
+            if(!inp.value) return;
+            Core.state.f.push({ name: inp.value, pfp: `https://i.pravatar.cc/100?u=${inp.value}` });
+            localStorage.setItem('cz_v55_f', JSON.stringify(Core.state.f));
+            inp.value = "";
+            this.render();
+            Core.guard.log("New identity linked");
+        },
+        render: function() {
+            const list = document.getElementById('friends-list');
+            list.innerHTML = "";
+            Core.state.f.forEach(f => {
+                const d = document.createElement('div');
+                d.className = "glass-luxury p-5 rounded-[2rem] flex items-center justify-between";
+                d.innerHTML = `<div class="flex items-center gap-4"><img src="${f.pfp}" class="w-10 h-10 rounded-full border border-gold/20"><p class="text-xs font-bold">${f.name}</p></div><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>`;
+                list.appendChild(d);
+            });
+        },
+        askAI: function() {
+            const inp = document.getElementById('ai-in');
+            const msg = inp.value.trim();
+            if(!msg) return;
+            this.append(msg, 'me');
+            inp.value = "";
+            Core.guard.log("Packet sent to IQ-Node");
+            setTimeout(() => {
+                let res = "Instruksi diproses. Protokol Jaro618 mengamankan jalur ini.";
+                if(msg.toLowerCase().includes("perbaiki")) { res = "Analisis sistem selesai. Menghubungi Cezi-Guard untuk prosedur Healing..."; Core.guard.deepHeal(); }
+                this.append(res, 'ai');
+            }, 800);
+        },
+        append: function(m, t) {
+            const b = document.getElementById('ai-chat-box');
+            const d = document.createElement('div');
+            d.className = `chat-bubble bubble-${t}`;
+            d.innerText = m;
+            b.appendChild(d);
+            b.scrollTop = b.scrollHeight;
+        }
+    },
+
+    // --- USER PROFILE ---
+    user: {
+        updatePFP: function(i) {
+            const r = new FileReader();
+            r.onload = (e) => { Core.state.u.pfp = e.target.result; Core.system.save(); Core.system.sync(); };
+            r.readAsDataURL(i.files[0]);
+        },
+        editName: function() {
+            const n = prompt("Sovereign Identity:", Core.state.u.name);
+            if(n) { Core.state.u.name = n; Core.system.save(); Core.system.sync(); }
+        }
+    },
+
+    modal: function(id) { document.getElementById(id).classList.toggle('hidden'); document.getElementById(id).classList.toggle('flex'); }
+};
+
+// INITIALIZE SYSTEM SOVEREIGN
+Core.system.init();
+</script>
+</body>
+</html>
